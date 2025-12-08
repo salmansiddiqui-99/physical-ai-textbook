@@ -1,0 +1,19 @@
+# Python dependencies for Physical AI & Humanoid Robotics Textbook
+#
+# This file contains Python dependencies for:
+# - Test infrastructure (pytest, validation scripts)
+# - Code example validation
+# - Front matter validation
+#
+# Installation:
+#   pip install -r requirements.txt
+
+# Testing framework
+pytest>=7.4.0
+pytest-cov>=4.1.0
+
+# YAML parsing (for front matter validation)
+PyYAML>=6.0
+
+# Markdown processing (optional, for advanced validation)
+markdown>=3.4.0

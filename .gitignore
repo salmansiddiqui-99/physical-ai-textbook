@@ -1,0 +1,75 @@
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# Production build
+/build
+/dist
+/.docusaurus
+
+# Generated files
+.docusaurus
+.cache-loader
+
+# Misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# IDE
+/.vscode
+/.idea
+*.swp
+*.swo
+*~
+
+# Python (for code examples and tests)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.venv
+venv/
+ENV/
+env/
+
+# Testing
+/coverage
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# OS
+Thumbs.db
+*.tmp
+
+# Environment variables
+.env
+.env.*
+!.env.example

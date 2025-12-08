@@ -1,0 +1,407 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!--
+    IMU (Inertial Measurement Unit) Sensor Macro
+
+    Simulates 6-DOF or 9-DOF IMU sensors with realistic noise characteristics.
+    Provides linear acceleration, angular velocity, and orientation data.
+
+    Key features:
+    - Configurable noise models (Gaussian white noise + bias drift)
+    - Suitable for balance control, odometry, and state estimation
+    - Best mounted at robot's center of mass (typically torso)
+
+    Parameters:
+      - parent: Parent link (recommend: torso or base_link)
+      - prefix: Sensor namespace (e.g., "torso", "base")
+      - x, y, z: Position offset from parent
+
+    Published topic:
+      - /${prefix}_imu (sensor_msgs/Imu)
+
+    Example usage:
+      <xacro:imu_sensor parent="torso_link" prefix="torso"
+                        x="0" y="0" z="0.15"/>
+  -->
+
+  <xacro:macro name="imu_sensor" params="parent prefix x:=0 y:=0 z:=0">
+
+    <!-- IMU Link (usually small/invisible) -->
+    <link name="${prefix}_imu_link">
+      <inertial>
+        <mass value="0.01"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.00001" ixy="0.0" ixz="0.0"
+                 iyy="0.00001" iyz="0.0"
+                 izz="0.00001"/>
+      </inertial>
+
+      <!-- Optional visual for debugging -->
+      <visual>
+        <geometry>
+          <box size="0.02 0.02 0.01"/>
+        </geometry>
+        <material name="imu_green">
+          <color rgba="0.0 0.8 0.0 1.0"/>
+        </material>
+      </visual>
+    </link>
+
+    <!-- Attach IMU to parent link -->
+    <joint name="${prefix}_imu_joint" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${prefix}_imu_link"/>
+      <origin xyz="${x} ${y} ${z}" rpy="0 0 0"/>
+    </joint>
+
+    <!-- Gazebo IMU Sensor Plugin -->
+    <gazebo reference="${prefix}_imu_link">
+      <sensor name="${prefix}_imu_sensor" type="imu">
+        <always_on>true</always_on>
+        <update_rate>100</update_rate>
+        <visualize>true</visualize>
+
+        <imu>
+          <!-- Angular Velocity (Gyroscope) -->
+          <angular_velocity>
+            <x>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.009</stddev>              <!-- ~0.5°/s noise -->
+                <bias_mean>0.00075</bias_mean>      <!-- 0.043°/s bias -->
+                <bias_stddev>0.0000008</bias_stddev>
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.009</stddev>
+                <bias_mean>0.00075</bias_mean>
+                <bias_stddev>0.0000008</bias_stddev>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.009</stddev>
+                <bias_mean>0.00075</bias_mean>
+                <bias_stddev>0.0000008</bias_stddev>
+              </noise>
+            </z>
+          </angular_velocity>
+
+          <!-- Linear Acceleration (Accelerometer) -->
+          <linear_acceleration>
+            <x>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.017</stddev>          <!-- ~0.017 m/s² noise -->
+                <bias_mean>0.1</bias_mean>      <!-- 0.1 m/s² bias -->
+                <bias_stddev>0.001</bias_stddev>
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.017</stddev>
+                <bias_mean>0.1</bias_mean>
+                <bias_stddev>0.001</bias_stddev>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.017</stddev>
+                <bias_mean>0.1</bias_mean>
+                <bias_stddev>0.001</bias_stddev>
+              </noise>
+            </z>
+          </linear_acceleration>
+        </imu>
+
+        <!-- ROS 2 Plugin -->
+        <plugin name="${prefix}_imu_plugin" filename="libgazebo_ros_imu_sensor.so">
+          <ros>
+            <namespace>/humanoid</namespace>
+            <remapping>~/out:=${prefix}_imu</remapping>
+          </ros>
+
+          <frame_name>${prefix}_imu_link</frame_name>
+
+          <!-- Use initial orientation as reference (false = world frame) -->
+          <initial_orientation_as_reference>false</initial_orientation_as_reference>
+        </plugin>
+      </sensor>
+    </gazebo>
+
+  </xacro:macro>
+
+
+  <!--
+    High-Quality IMU Macro
+
+    Simulates industrial-grade IMU with lower noise and drift.
+    Suitable for precise control and state estimation applications.
+  -->
+
+  <xacro:macro name="imu_sensor_high_quality" params="parent prefix x:=0 y:=0 z:=0">
+
+    <link name="${prefix}_imu_hq_link">
+      <inertial>
+        <mass value="0.02"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.00002" ixy="0.0" ixz="0.0"
+                 iyy="0.00002" iyz="0.0"
+                 izz="0.00002"/>
+      </inertial>
+
+      <visual>
+        <geometry>
+          <box size="0.03 0.03 0.015"/>
+        </geometry>
+        <material name="imu_hq_blue">
+          <color rgba="0.0 0.3 0.8 1.0"/>
+        </material>
+      </visual>
+    </link>
+
+    <joint name="${prefix}_imu_hq_joint" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${prefix}_imu_hq_link"/>
+      <origin xyz="${x} ${y} ${z}" rpy="0 0 0"/>
+    </joint>
+
+    <gazebo reference="${prefix}_imu_hq_link">
+      <sensor name="${prefix}_imu_hq_sensor" type="imu">
+        <always_on>true</always_on>
+        <update_rate>200</update_rate>
+        <visualize>false</visualize>
+
+        <imu>
+          <!-- High-Quality Gyroscope (lower noise) -->
+          <angular_velocity>
+            <x>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.003</stddev>          <!-- ~0.17°/s noise -->
+                <bias_mean>0.0002</bias_mean>   <!-- 0.011°/s bias -->
+                <bias_stddev>0.0000002</bias_stddev>
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.003</stddev>
+                <bias_mean>0.0002</bias_mean>
+                <bias_stddev>0.0000002</bias_stddev>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.003</stddev>
+                <bias_mean>0.0002</bias_mean>
+                <bias_stddev>0.0000002</bias_stddev>
+              </noise>
+            </z>
+          </angular_velocity>
+
+          <!-- High-Quality Accelerometer -->
+          <linear_acceleration>
+            <x>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.008</stddev>          <!-- Lower noise -->
+                <bias_mean>0.03</bias_mean>     <!-- Lower bias -->
+                <bias_stddev>0.0003</bias_stddev>
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.008</stddev>
+                <bias_mean>0.03</bias_mean>
+                <bias_stddev>0.0003</bias_stddev>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.008</stddev>
+                <bias_mean>0.03</bias_mean>
+                <bias_stddev>0.0003</bias_stddev>
+              </noise>
+            </z>
+          </linear_acceleration>
+        </imu>
+
+        <plugin name="${prefix}_imu_hq_plugin" filename="libgazebo_ros_imu_sensor.so">
+          <ros>
+            <namespace>/humanoid</namespace>
+            <remapping>~/out:=${prefix}_imu_hq</remapping>
+          </ros>
+          <frame_name>${prefix}_imu_hq_link</frame_name>
+          <initial_orientation_as_reference>false</initial_orientation_as_reference>
+        </plugin>
+      </sensor>
+    </gazebo>
+
+  </xacro:macro>
+
+
+  <!--
+    9-DOF IMU Macro (with Magnetometer)
+
+    Adds magnetometer data for absolute heading (compass).
+    Useful for outdoor navigation and drift correction.
+  -->
+
+  <xacro:macro name="imu_sensor_9dof" params="parent prefix x:=0 y:=0 z:=0">
+
+    <link name="${prefix}_imu_9dof_link">
+      <inertial>
+        <mass value="0.015"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.000015" ixy="0.0" ixz="0.0"
+                 iyy="0.000015" iyz="0.0"
+                 izz="0.000015"/>
+      </inertial>
+
+      <visual>
+        <geometry>
+          <box size="0.025 0.025 0.012"/>
+        </geometry>
+        <material name="imu_9dof_red">
+          <color rgba="0.8 0.0 0.0 1.0"/>
+        </material>
+      </visual>
+    </link>
+
+    <joint name="${prefix}_imu_9dof_joint" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${prefix}_imu_9dof_link"/>
+      <origin xyz="${x} ${y} ${z}" rpy="0 0 0"/>
+    </joint>
+
+    <gazebo reference="${prefix}_imu_9dof_link">
+      <sensor name="${prefix}_imu_9dof_sensor" type="imu">
+        <always_on>true</always_on>
+        <update_rate>100</update_rate>
+        <visualize>true</visualize>
+
+        <imu>
+          <angular_velocity>
+            <x>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.009</stddev>
+                <bias_mean>0.00075</bias_mean>
+                <bias_stddev>0.0000008</bias_stddev>
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.009</stddev>
+                <bias_mean>0.00075</bias_mean>
+                <bias_stddev>0.0000008</bias_stddev>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.009</stddev>
+                <bias_mean>0.00075</bias_mean>
+                <bias_stddev>0.0000008</bias_stddev>
+              </noise>
+            </z>
+          </angular_velocity>
+
+          <linear_acceleration>
+            <x>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.017</stddev>
+                <bias_mean>0.1</bias_mean>
+                <bias_stddev>0.001</bias_stddev>
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.017</stddev>
+                <bias_mean>0.1</bias_mean>
+                <bias_stddev>0.001</bias_stddev>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.017</stddev>
+                <bias_mean>0.1</bias_mean>
+                <bias_stddev>0.001</bias_stddev>
+              </noise>
+            </z>
+          </linear_acceleration>
+
+          <!-- Magnetometer (compass) -->
+          <magnetic_field>
+            <x>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.0002</stddev>  <!-- 0.2 milligauss -->
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.0002</stddev>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.0002</stddev>
+              </noise>
+            </z>
+          </magnetic_field>
+        </imu>
+
+        <plugin name="${prefix}_imu_9dof_plugin" filename="libgazebo_ros_imu_sensor.so">
+          <ros>
+            <namespace>/humanoid</namespace>
+            <remapping>~/out:=${prefix}_imu_9dof</remapping>
+          </ros>
+          <frame_name>${prefix}_imu_9dof_link</frame_name>
+          <initial_orientation_as_reference>false</initial_orientation_as_reference>
+        </plugin>
+      </sensor>
+    </gazebo>
+
+  </xacro:macro>
+
+
+  <!--
+    Noise Configuration Reference:
+
+    Consumer-grade IMU (e.g., MPU-6050):
+      - Gyro noise: 0.009 rad/s (~0.5°/s)
+      - Gyro bias: 0.00075 rad/s (~0.04°/s)
+      - Accel noise: 0.017 m/s²
+      - Accel bias: 0.1 m/s²
+
+    Industrial-grade IMU (e.g., Xsens MTi):
+      - Gyro noise: 0.003 rad/s (~0.17°/s)
+      - Gyro bias: 0.0002 rad/s (~0.01°/s)
+      - Accel noise: 0.008 m/s²
+      - Accel bias: 0.03 m/s²
+
+    Research-grade IMU (e.g., VectorNav VN-100):
+      - Gyro noise: 0.001 rad/s (~0.06°/s)
+      - Gyro bias: 0.00005 rad/s (~0.003°/s)
+      - Accel noise: 0.005 m/s²
+      - Accel bias: 0.01 m/s²
+  -->
+
+</robot>

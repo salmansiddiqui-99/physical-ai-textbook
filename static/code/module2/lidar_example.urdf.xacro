@@ -1,0 +1,283 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!--
+    LiDAR Sensor Macro for Humanoid Robots
+
+    This macro adds a 2D scanning LiDAR sensor that can be attached to any link.
+    Typical use: chest or head mounting for navigation and obstacle avoidance.
+
+    Parameters:
+      - parent: Name of the parent link to attach to
+      - prefix: Namespace prefix for sensor (e.g., "chest", "head")
+      - x, y, z: Position offset from parent link
+      - roll, pitch, yaw: Orientation offset (radians)
+
+    Example usage:
+      <xacro:lidar_sensor parent="torso_link" prefix="chest"
+                          x="0.1" y="0" z="0.2"
+                          roll="0" pitch="0" yaw="0"/>
+  -->
+
+  <xacro:macro name="lidar_sensor" params="parent prefix x:=0 y:=0 z:=0 roll:=0 pitch:=0 yaw:=0">
+
+    <!-- LiDAR Link (Physical Sensor) -->
+    <link name="${prefix}_lidar_link">
+      <visual>
+        <geometry>
+          <cylinder radius="0.03" length="0.05"/>
+        </geometry>
+        <material name="lidar_black">
+          <color rgba="0.1 0.1 0.1 1.0"/>
+        </material>
+      </visual>
+
+      <collision>
+        <geometry>
+          <cylinder radius="0.03" length="0.05"/>
+        </geometry>
+      </collision>
+
+      <inertial>
+        <mass value="0.2"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.0001" ixy="0.0" ixz="0.0"
+                 iyy="0.0001" iyz="0.0"
+                 izz="0.0001"/>
+      </inertial>
+    </link>
+
+    <!-- Joint to attach LiDAR to parent -->
+    <joint name="${prefix}_lidar_joint" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${prefix}_lidar_link"/>
+      <origin xyz="${x} ${y} ${z}" rpy="${roll} ${pitch} ${yaw}"/>
+    </joint>
+
+    <!-- Gazebo LiDAR Sensor Plugin -->
+    <gazebo reference="${prefix}_lidar_link">
+      <sensor type="ray" name="${prefix}_lidar_sensor">
+        <pose>0 0 0 0 0 0</pose>
+        <visualize>true</visualize>
+        <update_rate>10</update_rate>
+
+        <ray>
+          <!-- Horizontal Scan Configuration -->
+          <scan>
+            <horizontal>
+              <samples>720</samples>              <!-- 720 rays for 0.5° resolution -->
+              <resolution>1</resolution>
+              <min_angle>-3.14159265</min_angle>  <!-- -180 degrees -->
+              <max_angle>3.14159265</max_angle>   <!-- +180 degrees -->
+            </horizontal>
+          </scan>
+
+          <!-- Range Configuration -->
+          <range>
+            <min>0.1</min>      <!-- 10 cm minimum range -->
+            <max>30.0</max>     <!-- 30 m maximum range -->
+            <resolution>0.01</resolution>  <!-- 1 cm resolution -->
+          </range>
+
+          <!-- Realistic Noise Model -->
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.01</stddev>  <!-- ±1 cm standard deviation -->
+          </noise>
+        </ray>
+
+        <!-- ROS 2 Plugin Configuration -->
+        <plugin name="${prefix}_lidar_controller" filename="libgazebo_ros_ray_sensor.so">
+          <ros>
+            <namespace>/humanoid</namespace>
+            <remapping>~/out:=${prefix}_scan</remapping>
+          </ros>
+
+          <!-- Output message type -->
+          <output_type>sensor_msgs/LaserScan</output_type>
+
+          <!-- Frame ID for TF -->
+          <frame_name>${prefix}_lidar_link</frame_name>
+        </plugin>
+      </sensor>
+    </gazebo>
+
+  </xacro:macro>
+
+
+  <!--
+    High-Resolution LiDAR Macro (e.g., Velodyne-style)
+
+    Higher sample rate and longer range for advanced applications.
+    More computationally expensive but provides denser point clouds.
+  -->
+
+  <xacro:macro name="lidar_sensor_hires" params="parent prefix x:=0 y:=0 z:=0">
+
+    <link name="${prefix}_lidar_hires_link">
+      <visual>
+        <geometry>
+          <cylinder radius="0.05" length="0.08"/>
+        </geometry>
+        <material name="lidar_grey">
+          <color rgba="0.3 0.3 0.3 1.0"/>
+        </material>
+      </visual>
+
+      <collision>
+        <geometry>
+          <cylinder radius="0.05" length="0.08"/>
+        </geometry>
+      </collision>
+
+      <inertial>
+        <mass value="0.5"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.0005" ixy="0.0" ixz="0.0"
+                 iyy="0.0005" iyz="0.0"
+                 izz="0.0005"/>
+      </inertial>
+    </link>
+
+    <joint name="${prefix}_lidar_hires_joint" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${prefix}_lidar_hires_link"/>
+      <origin xyz="${x} ${y} ${z}" rpy="0 0 0"/>
+    </joint>
+
+    <gazebo reference="${prefix}_lidar_hires_link">
+      <sensor type="ray" name="${prefix}_lidar_hires_sensor">
+        <pose>0 0 0 0 0 0</pose>
+        <visualize>true</visualize>
+        <update_rate>20</update_rate>
+
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>1440</samples>             <!-- 1440 rays for 0.25° resolution -->
+              <resolution>1</resolution>
+              <min_angle>-3.14159265</min_angle>
+              <max_angle>3.14159265</max_angle>
+            </horizontal>
+          </scan>
+
+          <range>
+            <min>0.05</min>
+            <max>100.0</max>    <!-- 100 m range -->
+            <resolution>0.01</resolution>
+          </range>
+
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.005</stddev>  <!-- Higher quality: ±5 mm stddev -->
+          </noise>
+        </ray>
+
+        <plugin name="${prefix}_lidar_hires_controller" filename="libgazebo_ros_ray_sensor.so">
+          <ros>
+            <namespace>/humanoid</namespace>
+            <remapping>~/out:=${prefix}_scan_hires</remapping>
+          </ros>
+          <output_type>sensor_msgs/LaserScan</output_type>
+          <frame_name>${prefix}_lidar_hires_link</frame_name>
+        </plugin>
+      </sensor>
+    </gazebo>
+
+  </xacro:macro>
+
+
+  <!--
+    3D LiDAR Macro (Multi-Layer Scanning)
+
+    Simulates multi-layer LiDAR like Velodyne VLP-16 (16 vertical layers).
+    Provides 3D point clouds for complex environment mapping.
+  -->
+
+  <xacro:macro name="lidar_3d_sensor" params="parent prefix x:=0 y:=0 z:=0">
+
+    <link name="${prefix}_lidar_3d_link">
+      <visual>
+        <geometry>
+          <cylinder radius="0.06" length="0.12"/>
+        </geometry>
+        <material name="lidar_3d_color">
+          <color rgba="0.2 0.2 0.3 1.0"/>
+        </material>
+      </visual>
+
+      <collision>
+        <geometry>
+          <cylinder radius="0.06" length="0.12"/>
+        </geometry>
+      </collision>
+
+      <inertial>
+        <mass value="0.8"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.001" ixy="0.0" ixz="0.0"
+                 iyy="0.001" iyz="0.0"
+                 izz="0.001"/>
+      </inertial>
+    </link>
+
+    <joint name="${prefix}_lidar_3d_joint" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${prefix}_lidar_3d_link"/>
+      <origin xyz="${x} ${y} ${z}" rpy="0 0 0"/>
+    </joint>
+
+    <gazebo reference="${prefix}_lidar_3d_link">
+      <sensor type="gpu_ray" name="${prefix}_lidar_3d_sensor">
+        <pose>0 0 0 0 0 0</pose>
+        <visualize>true</visualize>
+        <update_rate>10</update_rate>
+
+        <ray>
+          <scan>
+            <!-- Horizontal scan (full 360°) -->
+            <horizontal>
+              <samples>1800</samples>
+              <resolution>1</resolution>
+              <min_angle>-3.14159265</min_angle>
+              <max_angle>3.14159265</max_angle>
+            </horizontal>
+
+            <!-- Vertical scan (16 layers, ±15°) -->
+            <vertical>
+              <samples>16</samples>
+              <resolution>1</resolution>
+              <min_angle>-0.261799</min_angle>  <!-- -15 degrees -->
+              <max_angle>0.261799</max_angle>   <!-- +15 degrees -->
+            </vertical>
+          </scan>
+
+          <range>
+            <min>0.1</min>
+            <max>100.0</max>
+            <resolution>0.01</resolution>
+          </range>
+
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.01</stddev>
+          </noise>
+        </ray>
+
+        <plugin name="${prefix}_lidar_3d_controller" filename="libgazebo_ros_ray_sensor.so">
+          <ros>
+            <namespace>/humanoid</namespace>
+            <remapping>~/out:=${prefix}_points</remapping>
+          </ros>
+          <output_type>sensor_msgs/PointCloud2</output_type>
+          <frame_name>${prefix}_lidar_3d_link</frame_name>
+        </plugin>
+      </sensor>
+    </gazebo>
+
+  </xacro:macro>
+
+</robot>

@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python tests/validate_frontmatter.py:*)",
+      "Bash(npx markdownlint:*)",
+      "Bash(npm run build:*)",
+      "Bash(bash .specify/scripts/bash/create-phr.sh:*)",
+      "Bash(test:*)",
+      "Bash(python -m pytest:*)",
+      "Bash(for file in docs/module1-ros2/ch*.md)",
+      "Bash(do sed -i 's/^id: ch\\([0-9]\\)-/id: module1-ros2\\/ch\\1-/' \"$file\")",
+      "Bash(done)",
+      "Bash(for file in docs/module*/ch*.md)",
+      "Bash(do sed -i 's/^id: module[0-9]-[a-z]*\\/ch/id: ch/' \"$file\")",
+      "Bash(python:*)",
+      "Bash(grep:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

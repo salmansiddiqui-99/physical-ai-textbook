@@ -1,0 +1,253 @@
+<?xml version="1.0"?>
+<!--
+Complete Humanoid Lower Body URDF with Xacro-style Structure
+
+Purpose: Full lower body humanoid with bilateral legs (left and right)
+Components: Pelvis, bilateral thighs, shins, feet
+Joints: Hip pitch (x2), knee (x2), ankle pitch (x2)
+
+This version manually expands what would be a Xacro macro to show
+both left and right legs with symmetrical structure.
+
+Usage:
+    # Validate URDF
+    check_urdf humanoid_full.urdf
+
+    # Visualize in RViz
+    ros2 launch urdf_tutorial display.launch.py model:=humanoid_full.urdf
+
+    # Generate kinematic tree diagram
+    urdf_to_graphviz humanoid_full.urdf
+
+Learning Objectives:
+- Full bilateral leg structure
+- Symmetrical joint definitions
+- Realistic inertial properties
+- Collision geometry for simulation
+-->
+<robot name="humanoid_lower_body">
+
+  <!-- Base link (pelvis) -->
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="0.3 0.2 0.15"/>
+      </geometry>
+      <material name="blue">
+        <color rgba="0 0 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.3 0.2 0.15"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="10.0"/>
+      <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/>
+    </inertial>
+  </link>
+
+  <!-- LEFT LEG -->
+
+  <!-- Left thigh link -->
+  <link name="left_thigh">
+    <visual>
+      <geometry>
+        <cylinder radius="0.05" length="0.4"/>
+      </geometry>
+      <origin xyz="0 0 -0.2" rpy="0 0 0"/>
+      <material name="gray">
+        <color rgba="0.6 0.6 0.6 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder radius="0.05" length="0.4"/>
+      </geometry>
+      <origin xyz="0 0 -0.2" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="2.0"/>
+      <inertia ixx="0.027" ixy="0" ixz="0" iyy="0.027" iyz="0" izz="0.0025"/>
+    </inertial>
+  </link>
+
+  <!-- Left hip joint -->
+  <joint name="left_hip_pitch" type="revolute">
+    <parent link="base_link"/>
+    <child link="left_thigh"/>
+    <origin xyz="0 0.1 0" rpy="0 0 0"/>  <!-- Left side: +0.1m -->
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.57" upper="1.57" effort="150" velocity="2.0"/>
+    <dynamics damping="1.0" friction="0.5"/>
+  </joint>
+
+  <!-- Left shin link -->
+  <link name="left_shin">
+    <visual>
+      <geometry>
+        <cylinder radius="0.04" length="0.4"/>
+      </geometry>
+      <origin xyz="0 0 -0.2" rpy="0 0 0"/>
+      <material name="dark_gray">
+        <color rgba="0.3 0.3 0.3 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder radius="0.04" length="0.4"/>
+      </geometry>
+      <origin xyz="0 0 -0.2" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="1.5"/>
+      <inertia ixx="0.02" ixy="0" ixz="0" iyy="0.02" iyz="0" izz="0.001"/>
+    </inertial>
+  </link>
+
+  <!-- Left knee joint -->
+  <joint name="left_knee" type="revolute">
+    <parent link="left_thigh"/>
+    <child link="left_shin"/>
+    <origin xyz="0 0 -0.4" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="0" upper="2.618" effort="100" velocity="2.0"/>  <!-- 0° to 150° -->
+    <dynamics damping="0.7" friction="0.3"/>
+  </joint>
+
+  <!-- Left foot link -->
+  <link name="left_foot">
+    <visual>
+      <geometry>
+        <box size="0.2 0.1 0.05"/>
+      </geometry>
+      <origin xyz="0.05 0 0" rpy="0 0 0"/>
+      <material name="black">
+        <color rgba="0.1 0.1 0.1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.2 0.1 0.05"/>
+      </geometry>
+      <origin xyz="0.05 0 0" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.5"/>
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/>
+    </inertial>
+  </link>
+
+  <!-- Left ankle joint -->
+  <joint name="left_ankle_pitch" type="revolute">
+    <parent link="left_shin"/>
+    <child link="left_foot"/>
+    <origin xyz="0 0 -0.4" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-0.785" upper="0.785" effort="50" velocity="2.0"/>  <!-- ±45° -->
+    <dynamics damping="0.5" friction="0.2"/>
+  </joint>
+
+  <!-- RIGHT LEG (mirror of left leg) -->
+
+  <!-- Right thigh link -->
+  <link name="right_thigh">
+    <visual>
+      <geometry>
+        <cylinder radius="0.05" length="0.4"/>
+      </geometry>
+      <origin xyz="0 0 -0.2" rpy="0 0 0"/>
+      <material name="gray">
+        <color rgba="0.6 0.6 0.6 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder radius="0.05" length="0.4"/>
+      </geometry>
+      <origin xyz="0 0 -0.2" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="2.0"/>
+      <inertia ixx="0.027" ixy="0" ixz="0" iyy="0.027" iyz="0" izz="0.0025"/>
+    </inertial>
+  </link>
+
+  <!-- Right hip joint -->
+  <joint name="right_hip_pitch" type="revolute">
+    <parent link="base_link"/>
+    <child link="right_thigh"/>
+    <origin xyz="0 -0.1 0" rpy="0 0 0"/>  <!-- Right side: -0.1m -->
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.57" upper="1.57" effort="150" velocity="2.0"/>
+    <dynamics damping="1.0" friction="0.5"/>
+  </joint>
+
+  <!-- Right shin link -->
+  <link name="right_shin">
+    <visual>
+      <geometry>
+        <cylinder radius="0.04" length="0.4"/>
+      </geometry>
+      <origin xyz="0 0 -0.2" rpy="0 0 0"/>
+      <material name="dark_gray">
+        <color rgba="0.3 0.3 0.3 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder radius="0.04" length="0.4"/>
+      </geometry>
+      <origin xyz="0 0 -0.2" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="1.5"/>
+      <inertia ixx="0.02" ixy="0" ixz="0" iyy="0.02" iyz="0" izz="0.001"/>
+    </inertial>
+  </link>
+
+  <!-- Right knee joint -->
+  <joint name="right_knee" type="revolute">
+    <parent link="right_thigh"/>
+    <child link="right_shin"/>
+    <origin xyz="0 0 -0.4" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="0" upper="2.618" effort="100" velocity="2.0"/>
+    <dynamics damping="0.7" friction="0.3"/>
+  </joint>
+
+  <!-- Right foot link -->
+  <link name="right_foot">
+    <visual>
+      <geometry>
+        <box size="0.2 0.1 0.05"/>
+      </geometry>
+      <origin xyz="0.05 0 0" rpy="0 0 0"/>
+      <material name="black">
+        <color rgba="0.1 0.1 0.1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.2 0.1 0.05"/>
+      </geometry>
+      <origin xyz="0.05 0 0" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.5"/>
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/>
+    </inertial>
+  </link>
+
+  <!-- Right ankle joint -->
+  <joint name="right_ankle_pitch" type="revolute">
+    <parent link="right_shin"/>
+    <child link="right_foot"/>
+    <origin xyz="0 0 -0.4" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-0.785" upper="0.785" effort="50" velocity="2.0"/>
+    <dynamics damping="0.5" friction="0.2"/>
+  </joint>
+
+</robot>
