@@ -35,25 +35,24 @@ const sidebars = {
         'module2-simulation/ch3-unity-visualization',
       ],
     },
-    // Module 3-4 to be added in future phases
-    // {
-    //   type: 'category',
-    //   label: 'Module 3: The AI-Robot Brain (NVIDIA Isaac)',
-    //   items: [
-    //     'module3-isaac/ch1-isaac-sim',
-    //     'module3-isaac/ch2-isaac-ros-perception',
-    //     'module3-isaac/ch3-navigation-humanoids',
-    //   ],
-    // },
-    // {
-    //   type: 'category',
-    //   label: 'Module 4: Vision-Language-Action (VLA)',
-    //   items: [
-    //     'module4-vla/ch1-voice-to-action',
-    //     'module4-vla/ch2-cognitive-planning',
-    //     'module4-vla/ch3-capstone-project',
-    //   ],
-    // },
+    {
+      type: 'category',
+      label: 'Module 3: The AI-Robot Brain (NVIDIA Isaac)',
+      items: [
+        'module3-isaac/ch1-isaac-sim',
+        'module3-isaac/ch2-isaac-ros-perception',
+        'module3-isaac/ch3-navigation-humanoids',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Module 4: Vision-Language-Action (VLA)',
+      items: [
+        'module4-vla/ch1-voice-to-action',
+        'module4-vla/ch2-cognitive-planning',
+        'module4-vla/ch3-capstone-project',
+      ],
+    },
   ],
 };
 
