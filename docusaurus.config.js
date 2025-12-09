@@ -12,15 +12,15 @@ const config = {
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
-  url: 'https://your-username.github.io',
+  url: 'https://salmansiddiqui-99.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/humanoid_aibook/',
+  baseUrl: '/physical-ai-textbook/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'your-username', // Usually your GitHub org/user name.
-  projectName: 'humanoid_aibook', // Usually your repo name.
+  organizationName: 'salmansiddiqui-99', // Usually your GitHub org/user name.
+  projectName: 'physical-ai-textbook', // Usually your repo name.
   deploymentBranch: 'gh-pages',
   trailingSlash: false,
 
@@ -45,7 +45,7 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/your-username/humanoid_aibook/tree/main/',
+            'https://github.com/salmansiddiqui-99/physical-ai-textbook/tree/main/',
         },
         blog: false, // Disable blog for course textbook
         theme: {
