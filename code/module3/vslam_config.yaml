@@ -1,0 +1,64 @@
+# Isaac ROS Visual SLAM Configuration for Humanoid Robots
+# Purpose: Configure cuVSLAM for real-time localization with stereo camera + IMU
+# Usage: ros2 launch isaac_ros_visual_slam isaac_ros_visual_slam.launch.py params_file:=vslam_config.yaml
+
+visual_slam:
+  ros__parameters:
+    # === Localization and Mapping ===
+    enable_localization_n_mapping: true  # Full SLAM (localization + mapping)
+    enable_slam_visualization: true      # Publish landmarks for RViz
+    enable_observations_view: true       # Debug: show feature matches
+    enable_loop_closure: true            # Correct drift when revisiting locations
+    min_loop_closure_score: 0.15         # Loop closure threshold (0-1, lower=more aggressive)
+
+    # === Frame IDs ===
+    map_frame: 'map'              # Global reference frame
+    odom_frame: 'odom'            # Odometry frame (drift-corrected by loop closure)
+    base_frame: 'base_link'       # Robot base frame
+    camera_frame: 'camera_link'   # Camera optical frame
+
+    # === Camera Configuration ===
+    num_cameras: 1                # Use 1 for mono, 2 for stereo
+    rectified_images: true        # Assume images already rectified by image pipeline
+    image_buffer_size: 50         # Number of frames to buffer (memory vs. latency trade-off)
+
+    # === IMU Fusion ===
+    enable_imu_fusion: true       # Fuse IMU data for better pose estimation
+    gyro_noise_density: 0.000244  # Gyroscope noise (rad/s/√Hz) - sensor datasheet value
+    gyro_random_walk: 0.000019    # Gyroscope bias drift (rad/s²/√Hz)
+    accel_noise_density: 0.001    # Accelerometer noise (m/s²/√Hz)
+    accel_random_walk: 0.0002     # Accelerometer bias drift (m/s³/√Hz)
+    calibration_frequency: 200.0  # IMU calibration frequency (Hz)
+
+    # === ORB Feature Detection ===
+    num_features_per_frame: 1500  # ORB keypoints to extract per image
+    feature_detector_threshold: 30  # FAST threshold (lower=more features, slower)
+    feature_descriptor_distance_threshold: 0.3  # Feature matching threshold
+
+    # === Tracking Robustness ===
+    min_num_tracked_features: 50  # Minimum features to maintain tracking
+    max_feature_age: 25           # Maximum age of features before re-initialization
+
+    # === Map Management ===
+    max_landmarks: 10000          # Maximum 3D landmarks in map (memory limit)
+    min_observations_per_landmark: 3  # Triangulation threshold
+    enable_map_deformation: true  # Allow map updates for loop closure corrections
+
+    # === Performance Tuning ===
+    horizontal_stereo_camera: true    # Cameras side-by-side (not vertical)
+    enable_debug_mode: false          # Disable for production (verbose logging)
+    enable_localization_only: false   # Set true to disable mapping (pure localization)
+
+    # === Output Topics ===
+    # Published topics (default names):
+    # - /visual_slam/tracking/odometry (nav_msgs/Odometry)
+    # - /visual_slam/tracking/vo_pose (geometry_msgs/PoseStamped)
+    # - /visual_slam/tracking/slam_path (nav_msgs/Path)
+    # - /visual_slam/status (isaac_ros_visual_slam_interfaces/msg/VisualSlamStatus)
+    # - /visual_slam/vis/landmarks_cloud (sensor_msgs/PointCloud2)
+    # - /visual_slam/vis/loop_closure_cloud (sensor_msgs/PointCloud2)
+
+    # === Coordinate System ===
+    # Isaac Sim uses Z-up (Omniverse convention)
+    # ROS 2 uses Z-up (REP 103)
+    # No transformation needed for humanoid base_link frame

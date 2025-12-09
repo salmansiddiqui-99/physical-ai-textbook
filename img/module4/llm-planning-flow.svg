@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 800">
+  <defs>
+    <style>
+      .box { fill: #4A90E2; stroke: #2E5C8A; stroke-width: 2; }
+      .box-input { fill: #7CB342; }
+      .box-prompt { fill: #FB8C00; }
+      .box-llm { fill: #E53935; }
+      .box-parse { fill: #AB47BC; }
+      .box-validate { fill: #FDD835; }
+      .box-execute { fill: #26A69A; }
+      .diamond { fill: #FFB74D; stroke: #F57C00; stroke-width: 2; }
+      .text { font-family: Arial, sans-serif; font-size: 13px; fill: white; text-anchor: middle; }
+      .text-small { font-size: 11px; fill: white; }
+      .label { font-size: 12px; fill: #333; text-anchor: middle; }
+      .arrow { stroke: #333; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .title { font-size: 20px; font-weight: bold; fill: #333; text-anchor: middle; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#333" />
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="350" y="30" class="title">LLM Task Planning Flowchart</text>
+
+  <!-- 1. User Task Input -->
+  <rect x="250" y="60" width="200" height="50" rx="5" class="box box-input"/>
+  <text x="350" y="90" class="text">User Task Input</text>
+
+  <path d="M 350 110 L 350 140" class="arrow"/>
+
+  <!-- 2. Build Prompt -->
+  <rect x="225" y="140" width="250" height="80" rx="5" class="box box-prompt"/>
+  <text x="350" y="165" class="text">Build Few-Shot Prompt</text>
+  <text x="350" y="185" class="text-small">• System instructions</text>
+  <text x="350" y="200" class="text-small">• Available actions</text>
+  <text x="350" y="215" class="text-small">• Example task-plan pairs</text>
+
+  <path d="M 350 220 L 350 250" class="arrow"/>
+
+  <!-- 3. LLM Inference -->
+  <rect x="225" y="250" width="250" height="80" rx="5" class="box box-llm"/>
+  <text x="350" y="275" class="text">LLM Inference</text>
+  <text x="350" y="295" class="text-small">GPT-4 / Claude API</text>
+  <text x="350" y="310" class="text-small">Temperature: 0.2</text>
+
+  <path d="M 350 330 L 350 360" class="arrow"/>
+
+  <!-- 4. Parse Response -->
+  <rect x="225" y="360" width="250" height="60" rx="5" class="box box-parse"/>
+  <text x="350" y="385" class="text">Parse JSON Response</text>
+  <text x="350" y="405" class="text-small">Extract action sequence</text>
+
+  <path d="M 350 420 L 350 450" class="arrow"/>
+
+  <!-- 5. Validation Diamond -->
+  <g>
+    <path d="M 350 450 L 450 500 L 350 550 L 250 500 Z" class="diamond"/>
+    <text x="350" y="495" class="text" style="fill: #333">Valid</text>
+    <text x="350" y="510" class="text" style="fill: #333">JSON?</text>
+  </g>
+
+  <!-- No path (retry) -->
+  <path d="M 250 500 L 150 500 L 150 290 L 225 290" class="arrow"/>
+  <text x="180" y="495" class="label">No - Retry</text>
+
+  <!-- Yes path (continue) -->
+  <path d="M 450 500 L 550 500" class="arrow"/>
+  <text x="490" y="495" class="label">Yes</text>
+
+  <!-- 6. Validate Actions -->
+  <rect x="550" y="470" width="120" height="60" rx="5" class="box box-validate"/>
+  <text x="610" y="495" class="text">Validate</text>
+  <text x="610" y="515" class="text-small">Actions</text>
+
+  <path d="M 610 530 L 610 560" class="arrow"/>
+
+  <!-- 7. Action Valid Diamond -->
+  <g>
+    <path d="M 610 560 L 670 600 L 610 640 L 550 600 Z" class="diamond"/>
+    <text x="610" y="595" class="text" style="fill: #333">Actions</text>
+    <text x="610" y="610" class="text" style="fill: #333">Valid?</text>
+  </g>
+
+  <!-- No path (error) -->
+  <path d="M 550 600 L 500 600 L 500 290 L 475 290" class="arrow" style="stroke: #E53935"/>
+  <text x="515" y="595" class="label" style="fill: #E53935">No - Error</text>
+
+  <!-- Yes path (execute) -->
+  <path d="M 610 640 L 610 670" class="arrow"/>
+  <text x="650" y="660" class="label">Yes</text>
+
+  <!-- 8. Execute Plan -->
+  <rect x="510" y="670" width="200" height="60" rx="5" class="box box-execute"/>
+  <text x="610" y="695" class="text">Execute Action Plan</text>
+  <text x="610" y="715" class="text-small">Via Action Graph Executor</text>
+
+  <path d="M 510 700 L 350 700" class="arrow"/>
+
+  <!-- 9. Final Actions -->
+  <rect x="150" y="670" width="200" height="60" rx="5" class="box"/>
+  <text x="250" y="695" class="text">Robot Actions</text>
+  <text x="250" y="715" class="text-small">Navigate, Grasp, Place, etc.</text>
+
+  <!-- Left side: Example prompt structure -->
+  <g>
+    <rect x="20" y="140" width="180" height="200" rx="5" style="fill: #F5F5F5; stroke: #999; stroke-width: 1"/>
+    <text x="110" y="160" class="label" style="font-weight: bold">Example Prompt:</text>
+    <text x="30" y="180" class="label" style="text-anchor: start; font-size: 10px">Task: "Bring water"</text>
+    <text x="30" y="195" class="label" style="text-anchor: start; font-size: 10px">Plan:</text>
+    <text x="30" y="210" class="label" style="text-anchor: start; font-size: 9px">1. navigate_to(kitchen)</text>
+    <text x="30" y="223" class="label" style="text-anchor: start; font-size: 9px">2. detect(bottle)</text>
+    <text x="30" y="236" class="label" style="text-anchor: start; font-size: 9px">3. grasp(bottle_0)</text>
+    <text x="30" y="249" class="label" style="text-anchor: start; font-size: 9px">4. navigate_to(user)</text>
+    <text x="30" y="262" class="label" style="text-anchor: start; font-size: 9px">5. place(user_hand)</text>
+    <text x="30" y="280" class="label" style="text-anchor: start; font-size: 10px; font-style: italic">---</text>
+    <text x="30" y="295" class="label" style="text-anchor: start; font-size: 10px">Your task: "{input}"</text>
+    <text x="30" y="310" class="label" style="text-anchor: start; font-size: 10px">Generate plan:</text>
+  </g>
+
+  <!-- Right side: Available actions -->
+  <g>
+    <rect x="20" y="400" width="180" height="180" rx="5" style="fill: #F5F5F5; stroke: #999; stroke-width: 1"/>
+    <text x="110" y="420" class="label" style="font-weight: bold">Available Actions:</text>
+    <text x="30" y="440" class="label" style="text-anchor: start; font-size: 10px">• navigate_to(location)</text>
+    <text x="30" y="455" class="label" style="text-anchor: start; font-size: 10px">• detect_objects(type)</text>
+    <text x="30" y="470" class="label" style="text-anchor: start; font-size: 10px">• grasp(object_id)</text>
+    <text x="30" y="485" class="label" style="text-anchor: start; font-size: 10px">• place(location)</text>
+    <text x="30" y="500" class="label" style="text-anchor: start; font-size: 10px">• open(container)</text>
+    <text x="30" y="515" class="label" style="text-anchor: start; font-size: 10px">• close(container)</text>
+    <text x="30" y="530" class="label" style="text-anchor: start; font-size: 10px">• rotate(angle)</text>
+    <text x="30" y="545" class="label" style="text-anchor: start; font-size: 10px">• wait(duration)</text>
+  </g>
+
+  <!-- Bottom note -->
+  <text x="350" y="770" class="label" style="font-style: italic">
+    LLM transforms natural language into executable robot action sequences
+  </text>
+</svg>

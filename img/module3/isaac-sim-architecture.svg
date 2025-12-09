@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <defs>
+    <style>
+      .title { font: bold 24px sans-serif; fill: #333; }
+      .box { fill: #4CAF50; stroke: #2E7D32; stroke-width: 2; }
+      .text { font: 14px sans-serif; fill: white; text-anchor: middle; }
+      .label { font: 12px sans-serif; fill: #666; }
+      .arrow { stroke: #333; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#333" />
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="400" y="30" class="title" text-anchor="middle">Isaac Sim Architecture</text>
+
+  <!-- Layer 1: Omniverse -->
+  <rect x="50" y="60" width="700" height="80" rx="5" fill="#76D7C4" stroke="#16A085" stroke-width="2"/>
+  <text x="400" y="105" class="title" style="font-size: 18px; fill: #16A085;" text-anchor="middle">NVIDIA Omniverse Platform</text>
+
+  <!-- Layer 2: Core Components -->
+  <g>
+    <rect x="70" y="170" width="150" height="100" rx="5" class="box"/>
+    <text x="145" y="210" class="text">PhysX 5.0</text>
+    <text x="145" y="230" class="label" style="fill: white;">GPU Physics</text>
+  </g>
+
+  <g>
+    <rect x="240" y="170" width="150" height="100" rx="5" class="box"/>
+    <text x="315" y="210" class="text">RTX Renderer</text>
+    <text x="315" y="230" class="label" style="fill: white;">Ray Tracing</text>
+  </g>
+
+  <g>
+    <rect x="410" y="170" width="150" height="100" rx="5" class="box"/>
+    <text x="485" y="210" class="text">USD Runtime</text>
+    <text x="485" y="230" class="label" style="fill: white;">Scene Graph</text>
+  </g>
+
+  <g>
+    <rect x="580" y="170" width="150" height="100" rx="5" class="box"/>
+    <text x="655" y="210" class="text">Replicator</text>
+    <text x="655" y="230" class="label" style="fill: white;">Synth Data</text>
+  </g>
+
+  <!-- Layer 3: Isaac Sim Components -->
+  <g>
+    <rect x="120" y="310" width="200" height="80" rx="5" fill="#2196F3" stroke="#0D47A1" stroke-width="2"/>
+    <text x="220" y="355" class="text">Robot Importers</text>
+    <text x="220" y="375" class="label" style="fill: white;">URDF, USD</text>
+  </g>
+
+  <g>
+    <rect x="350" y="310" width="200" height="80" rx="5" fill="#2196F3" stroke="#0D47A1" stroke-width="2"/>
+    <text x="450" y="355" class="text">Sensors</text>
+    <text x="450" y="375" class="label" style="fill: white;">Camera, LiDAR, IMU</text>
+  </g>
+
+  <g>
+    <rect x="580" y="310" width="150" height="80" rx="5" fill="#2196F3" stroke="#0D47A1" stroke-width="2"/>
+    <text x="655" y="355" class="text">OmniGraph</text>
+    <text x="655" y="375" class="label" style="fill: white;">Visual Scripting</text>
+  </g>
+
+  <!-- Layer 4: ROS 2 Integration -->
+  <rect x="150" y="430" width="500" height="100" rx="5" fill="#FF9800" stroke="#E65100" stroke-width="2"/>
+  <text x="400" y="470" class="text" style="fill: white; font-size: 18px;">ROS 2 Bridge</text>
+  <text x="400" y="495" class="label" style="fill: white;">Publishers: /camera/image, /joint_states, /tf</text>
+  <text x="400" y="515" class="label" style="fill: white;">Subscribers: /cmd_vel, /joint_command</text>
+
+  <!-- Arrows -->
+  <path d="M 400 140 L 400 170" class="arrow"/>
+  <path d="M 220 270 L 220 310" class="arrow"/>
+  <path d="M 450 270 L 450 310" class="arrow"/>
+  <path d="M 655 270 L 655 310" class="arrow"/>
+  <path d="M 220 390 L 280 430" class="arrow"/>
+  <path d="M 450 390 L 420 430" class="arrow"/>
+  <path d="M 655 390 L 540 430" class="arrow"/>
+</svg>

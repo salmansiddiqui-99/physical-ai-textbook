@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <defs>
+    <style>
+      .box { fill: #4A90E2; stroke: #2E5C8A; stroke-width: 2; }
+      .box-voice { fill: #7CB342; }
+      .box-llm { fill: #FB8C00; }
+      .box-action { fill: #E53935; }
+      .box-perception { fill: #AB47BC; }
+      .text { font-family: Arial, sans-serif; font-size: 14px; fill: white; text-anchor: middle; }
+      .label { font-size: 12px; fill: #333; text-anchor: middle; }
+      .arrow { stroke: #333; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .title { font-size: 20px; font-weight: bold; fill: #333; text-anchor: middle; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#333" />
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="400" y="30" class="title">Vision-Language-Action (VLA) Architecture</text>
+
+  <!-- User Input -->
+  <rect x="300" y="60" width="200" height="50" rx="5" class="box" style="fill: #78909C"/>
+  <text x="400" y="90" class="text">User Voice Command</text>
+
+  <!-- Arrow to Voice -->
+  <path d="M 400 110 L 400 140" class="arrow"/>
+  <text x="450" y="130" class="label">Audio</text>
+
+  <!-- Voice Module -->
+  <rect x="300" y="140" width="200" height="60" rx="5" class="box box-voice"/>
+  <text x="400" y="165" class="text">Voice Recognition</text>
+  <text x="400" y="185" class="text" style="font-size: 11px">(Whisper STT)</text>
+
+  <!-- Arrow to Language -->
+  <path d="M 400 200 L 400 230" class="arrow"/>
+  <text x="470" y="220" class="label">Transcription</text>
+
+  <!-- Language Module (LLM) -->
+  <rect x="250" y="230" width="300" height="80" rx="5" class="box box-llm"/>
+  <text x="400" y="255" class="text">Cognitive Planning</text>
+  <text x="400" y="275" class="text" style="font-size: 11px">(LLM Task Decomposition)</text>
+  <text x="400" y="295" class="text" style="font-size: 10px">GPT-4 / Claude</text>
+
+  <!-- Arrow to Action Graph -->
+  <path d="M 400 310 L 400 340" class="arrow"/>
+  <text x="470" y="330" class="label">Action Plan</text>
+
+  <!-- Action Graph Executor -->
+  <rect x="250" y="340" width="300" height="60" rx="5" class="box box-action"/>
+  <text x="400" y="365" class="text">Action Graph Executor</text>
+  <text x="400" y="385" class="text" style="font-size: 11px">(ROS 2 Action Clients)</text>
+
+  <!-- Arrow split to multiple actions -->
+  <path d="M 300 400 L 150 450" class="arrow"/>
+  <path d="M 400 400 L 400 450" class="arrow"/>
+  <path d="M 500 400 L 650 450" class="arrow"/>
+
+  <!-- Action 1: Navigation -->
+  <rect x="50" y="450" width="200" height="60" rx="5" class="box"/>
+  <text x="150" y="475" class="text">Navigation</text>
+  <text x="150" y="495" class="text" style="font-size: 11px">(Nav2)</text>
+
+  <!-- Action 2: Manipulation -->
+  <rect x="300" y="450" width="200" height="60" rx="5" class="box"/>
+  <text x="400" y="475" class="text">Manipulation</text>
+  <text x="400" y="495" class="text" style="font-size: 11px">(Grasp/Place)</text>
+
+  <!-- Action 3: Perception -->
+  <rect x="550" y="450" width="200" height="60" rx="5" class="box box-perception"/>
+  <text x="650" y="475" class="text">Perception</text>
+  <text x="650" y="495" class="text" style="font-size: 11px">(Object Detection)</text>
+
+  <!-- Feedback loop -->
+  <path d="M 650 510 L 650 540 L 400 540 L 400 310" class="arrow" style="stroke-dasharray: 5,5; stroke: #666"/>
+  <text x="520" y="535" class="label" style="fill: #666">Feedback</text>
+
+  <!-- Side annotations -->
+  <g>
+    <text x="50" y="170" class="label" style="text-anchor: start; font-weight: bold">Vision:</text>
+    <text x="50" y="185" class="label" style="text-anchor: start">Audio → Text</text>
+
+    <text x="50" y="270" class="label" style="text-anchor: start; font-weight: bold">Language:</text>
+    <text x="50" y="285" class="label" style="text-anchor: start">Task Planning</text>
+
+    <text x="50" y="370" class="label" style="text-anchor: start; font-weight: bold">Action:</text>
+    <text x="50" y="385" class="label" style="text-anchor: start">Robot Execution</text>
+  </g>
+
+  <!-- Bottom notes -->
+  <text x="400" y="570" class="label" style="font-style: italic">
+    Complete pipeline: Voice → Understanding → Planning → Physical Actions
+  </text>
+</svg>

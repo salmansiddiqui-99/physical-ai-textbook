@@ -1,0 +1,170 @@
+#usda 1.0
+(
+    defaultPrim = "World"
+    upAxis = "Z"
+    metersPerUnit = 1.0
+    doc = """Humanoid scene with stereo cameras and sensors
+             Purpose: Complete perception setup for Isaac ROS integration
+             Usage: Import humanoid URDF, attach sensors, configure ROS bridge"""
+)
+
+def Xform "World"
+{
+    def Xform "Environment"
+    {
+        def Plane "GroundPlane" (
+            prepend apiSchemas = ["PhysicsCollisionAPI"]
+        )
+        {
+            float3[] extent = [(-50, -50, 0), (50, 50, 0)]
+            double size = 50
+            token axis = "Z"
+            bool physics:collisionEnabled = true
+        }
+
+        # Warehouse-style obstacles
+        def Cube "Wall1"
+        {
+            double size = 1.0
+            float3 xformOp:scale = (10, 0.2, 2.5)
+            float3 xformOp:translate = (5, 0, 1.25)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cube "Wall2"
+        {
+            double size = 1.0
+            float3 xformOp:scale = (0.2, 8, 2.5)
+            float3 xformOp:translate = (0, 4, 1.25)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cylinder "Obstacle1" (
+            prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsRigidBodyAPI"]
+        )
+        {
+            double radius = 0.3
+            double height = 1.5
+            float3 xformOp:translate = (2, 1, 0.75)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+            bool physics:rigidBodyEnabled = false
+        }
+
+        def Cube "Box1" (
+            prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsRigidBodyAPI"]
+        )
+        {
+            double size = 0.4
+            float3 xformOp:translate = (1.5, -1.0, 0.2)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+            float physics:mass = 5.0
+            bool physics:rigidBodyEnabled = true
+        }
+
+        def DistantLight "Sun"
+        {
+            float intensity = 1200
+            float3 color = (1.0, 0.95, 0.88)
+            float angle = 0.5
+            quatf xformOp:orient = (0.7071, 0.7071, 0, 0)
+            uniform token[] xformOpOrder = ["xformOp:orient"]
+        }
+
+        def DomeLight "Sky"
+        {
+            float intensity = 400
+            asset texture:file = @omni:/NVIDIA/Assets/Skies/Indoor/ZetoCG_com_WarehouseInterior002_4k.hdr@
+        }
+    }
+
+    # Humanoid robot placeholder (import URDF via Isaac Sim)
+    def Xform "Humanoid" (
+        doc = "Import humanoid URDF here using Isaac Sim URDF importer"
+    )
+    {
+        float3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+
+        # Sensor attachments will be created by Isaac Sim after URDF import
+        def Xform "Sensors"
+        {
+            # Stereo camera pair (left and right)
+            def Camera "StereoLeft" (
+                prepend apiSchemas = ["IsaacSensorCreateRenderProductAPI"]
+            )
+            {
+                float focalLength = 24.0
+                float focusDistance = 400
+                float fStop = 8.0
+                float horizontalAperture = 20.955
+                float verticalAperture = 15.2908
+                token projection = "pinhole"
+                double shutter:close = 0.01
+                double shutter:open = 0.0
+                float3 xformOp:translate = (0.05, 0.06, 1.5)  # Head position, left camera
+                uniform token[] xformOpOrder = ["xformOp:translate"]
+
+                # ROS 2 configuration (set in action graph)
+                string isaac:ros2:topicName = "/humanoid/camera/left/image_raw"
+                string isaac:ros2:cameraInfoTopicName = "/humanoid/camera/left/camera_info"
+                int isaac:ros2:frameId = "camera_left_optical_frame"
+            }
+
+            def Camera "StereoRight" (
+                prepend apiSchemas = ["IsaacSensorCreateRenderProductAPI"]
+            )
+            {
+                float focalLength = 24.0
+                float focusDistance = 400
+                float fStop = 8.0
+                float horizontalAperture = 20.955
+                float verticalAperture = 15.2908
+                token projection = "pinhole"
+                double shutter:close = 0.01
+                double shutter:open = 0.0
+                float3 xformOp:translate = (0.05, -0.06, 1.5)  # Head position, right camera
+                uniform token[] xformOpOrder = ["xformOp:translate"]
+
+                string isaac:ros2:topicName = "/humanoid/camera/right/image_raw"
+                string isaac:ros2:cameraInfoTopicName = "/humanoid/camera/right/camera_info"
+                int isaac:ros2:frameId = "camera_right_optical_frame"
+            }
+
+            # IMU sensor
+            def Xform "IMU" (
+                prepend apiSchemas = ["IsaacSensorCreateImuSensorAPI"]
+            )
+            {
+                float3 xformOp:translate = (0, 0, 1.0)  # Torso center
+                uniform token[] xformOpOrder = ["xformOp:translate"]
+
+                # IMU parameters
+                float isaac:imu:linearAccelerationFilterWidth = 1.0
+                float isaac:imu:angularVelocityFilterWidth = 1.0
+                float isaac:imu:orientationFilterWidth = 1.0
+                string isaac:ros2:topicName = "/humanoid/imu/data"
+                string isaac:ros2:frameId = "imu_link"
+            }
+        }
+    }
+
+    def PhysicsScene "PhysicsScene"
+    {
+        vector3f physics:gravityDirection = (0, 0, -1)
+        float physics:gravityMagnitude = 9.81
+    }
+
+    # Action Graph for ROS 2 integration (configure via Isaac Sim UI or Python API)
+    def OmniGraph "ActionGraph" (
+        doc = "Configure ROS 2 publishers for sensors using OmniGraph editor"
+    )
+    {
+        # Nodes:
+        # 1. On Playback Tick
+        # 2. ROS 2 Context (domain_id=0)
+        # 3. ROS 2 Camera Helper (for StereoLeft)
+        # 4. ROS 2 Camera Helper (for StereoRight)
+        # 5. ROS 2 Publish IMU
+        # 6. ROS 2 Publish TF (for camera frames)
+    }
+}

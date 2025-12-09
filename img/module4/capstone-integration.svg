@@ -1,0 +1,172 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 700">
+  <defs>
+    <style>
+      .box { fill: #4A90E2; stroke: #2E5C8A; stroke-width: 2; }
+      .module1 { fill: #7CB342; }
+      .module2 { fill: #FB8C00; }
+      .module3 { fill: #AB47BC; }
+      .module4 { fill: #E53935; }
+      .safety { fill: #FF5722; }
+      .state { fill: #00BCD4; }
+      .text { font-family: Arial, sans-serif; font-size: 12px; fill: white; text-anchor: middle; }
+      .text-small { font-size: 10px; }
+      .label { font-size: 11px; fill: #333; text-anchor: middle; }
+      .arrow { stroke: #555; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+      .bidirectional { stroke-dasharray: 4,2; }
+      .title { font-size: 22px; font-weight: bold; fill: #333; text-anchor: middle; }
+      .module-label { font-size: 14px; font-weight: bold; fill: #333; }
+    </style>
+    <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#555" />
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="450" y="30" class="title">Capstone Project: Complete System Integration</text>
+
+  <!-- User Interface -->
+  <rect x="350" y="60" width="200" height="45" rx="5" style="fill: #78909C; stroke: #546E7A; stroke-width: 2"/>
+  <text x="450" y="85" class="text">User / Voice Commands</text>
+
+  <path d="M 450 105 L 450 135" class="arrow"/>
+
+  <!-- Module 4: Voice & Cognitive Layer -->
+  <g>
+    <rect x="250" y="135" width="400" height="120" rx="5" class="box module4"/>
+    <text x="260" y="155" class="module-label" style="fill: white; text-anchor: start">Module 4: Voice-Language-Action</text>
+
+    <!-- Voice Recognition -->
+    <rect x="270" y="165" width="160" height="40" rx="3" style="fill: rgba(255,255,255,0.2); stroke: white; stroke-width: 1"/>
+    <text x="350" y="182" class="text">Whisper STT</text>
+    <text x="350" y="195" class="text-small">Voice → Text</text>
+
+    <!-- LLM Planner -->
+    <rect x="460" y="165" width="160" height="40" rx="3" style="fill: rgba(255,255,255,0.2); stroke: white; stroke-width: 1"/>
+    <text x="540" y="182" class="text">LLM Task Planner</text>
+    <text x="540" y="195" class="text-small">GPT-4 / Claude</text>
+
+    <!-- Action Executor -->
+    <rect x="270" y="215" width="350" height="30" rx="3" style="fill: rgba(255,255,255,0.2); stroke: white; stroke-width: 1"/>
+    <text x="445" y="235" class="text">Action Graph Executor</text>
+
+    <path d="M 430 185 L 460 185" class="arrow"/>
+    <path d="M 445 205 L 445 215" class="arrow"/>
+  </g>
+
+  <path d="M 450 255 L 450 285" class="arrow"/>
+
+  <!-- Middle Layer: Core Robot Systems -->
+  <g>
+    <!-- Module 3: Perception & Navigation -->
+    <rect x="50" y="285" width="350" height="180" rx="5" class="box module3"/>
+    <text x="60" y="305" class="module-label" style="fill: white; text-anchor: start">Module 3: Isaac Perception & Navigation</text>
+
+    <!-- Isaac ROS -->
+    <rect x="70" y="320" width="150" height="55" rx="3" style="fill: rgba(255,255,255,0.2); stroke: white; stroke-width: 1"/>
+    <text x="145" y="340" class="text">Isaac ROS</text>
+    <text x="145" y="355" class="text-small">• cuVSLAM</text>
+    <text x="145" y="367" class="text-small">• Stereo Depth</text>
+
+    <!-- Nav2 -->
+    <rect x="230" y="320" width="150" height="55" rx="3" style="fill: rgba(255,255,255,0.2); stroke: white; stroke-width: 1"/>
+    <text x="305" y="340" class="text">Nav2</text>
+    <text x="305" y="355" class="text-small">• Path Planning</text>
+    <text x="305" y="367" class="text-small">• Bipedal Control</text>
+
+    <!-- Vision -->
+    <rect x="70" y="385" width="150" height="50" rx="3" style="fill: rgba(255,255,255,0.2); stroke: white; stroke-width: 1"/>
+    <text x="145" y="405" class="text">Computer Vision</text>
+    <text x="145" y="420" class="text-small">Object Detection</text>
+
+    <!-- Manipulation -->
+    <rect x="230" y="385" width="150" height="50" rx="3" style="fill: rgba(255,255,255,0.2); stroke: white; stroke-width: 1"/>
+    <text x="305" y="405" class="text">Manipulation</text>
+    <text x="305" y="420" class="text-small">Grasp Planning</text>
+
+    <!-- Module 1: ROS 2 Control -->
+    <rect x="500" y="285" width="350" height="180" rx="5" class="box module1"/>
+    <text x="510" y="305" class="module-label" style="fill: white; text-anchor: start">Module 1: ROS 2 Control & Hardware</text>
+
+    <!-- Joint Controllers -->
+    <rect x="520" y="320" width="150" height="55" rx="3" style="fill: rgba(255,255,255,0.2); stroke: white; stroke-width: 1"/>
+    <text x="595" y="340" class="text">Joint Controllers</text>
+    <text x="595" y="355" class="text-small">• Position</text>
+    <text x="595" y="367" class="text-small">• Velocity</text>
+
+    <!-- Action Servers -->
+    <rect x="680" y="320" width="150" height="55" rx="3" style="fill: rgba(255,255,255,0.2); stroke: white; stroke-width: 1"/>
+    <text x="755" y="340" class="text">Action Servers</text>
+    <text x="755" y="355" class="text-small">• Gripper</text>
+    <text x="755" y="367" class="text-small">• Walk</text>
+
+    <!-- TF & URDF -->
+    <rect x="520" y="385" width="150" height="50" rx="3" style="fill: rgba(255,255,255,0.2); stroke: white; stroke-width: 1"/>
+    <text x="595" y="405" class="text">TF & URDF</text>
+    <text x="595" y="420" class="text-small">Robot Model</text>
+
+    <!-- Hardware Interface -->
+    <rect x="680" y="385" width="150" height="50" rx="3" style="fill: rgba(255,255,255,0.2); stroke: white; stroke-width: 1"/>
+    <text x="755" y="405" class="text">Hardware</text>
+    <text x="755" y="420" class="text-small">Motor Drivers</text>
+  </g>
+
+  <!-- Connections from Module 4 to Module 3 and Module 1 -->
+  <path d="M 320 255 L 225 285" class="arrow"/>
+  <path d="M 580 255 L 675 285" class="arrow"/>
+
+  <!-- Cross-module connections -->
+  <path d="M 400 350 L 500 350" class="arrow bidirectional"/>
+  <text x="450" y="345" class="label">Sensor Data</text>
+
+  <path d="M 225 465 L 225 495" class="arrow"/>
+  <path d="M 675 465 L 675 495" class="arrow"/>
+
+  <!-- Module 2: Simulation (Optional) -->
+  <rect x="250" y="495" width="400" height="70" rx="5" class="box module2"/>
+  <text x="260" y="515" class="module-label" style="fill: white; text-anchor: start">Module 2: Isaac Sim (Optional Testing)</text>
+
+  <rect x="270" y="525" width="160" height="30" rx="3" style="fill: rgba(255,255,255,0.2); stroke: white; stroke-width: 1"/>
+  <text x="350" y="545" class="text">Isaac Sim Bridge</text>
+
+  <rect x="460" y="525" width="160" height="30" rx="3" style="fill: rgba(255,255,255,0.2); stroke: white; stroke-width: 1"/>
+  <text x="540" y="545" class="text">Synthetic Data</text>
+
+  <!-- Safety & State Management -->
+  <g>
+    <!-- Safety Monitor -->
+    <rect x="50" y="590" width="200" height="80" rx="5" class="box safety"/>
+    <text x="150" y="610" class="text">Safety Monitor</text>
+    <text x="150" y="625" class="text-small">• Emergency Stop</text>
+    <text x="150" y="638" class="text-small">• Collision Avoidance</text>
+    <text x="150" y="651" class="text-small">• Battery Monitor</text>
+
+    <!-- State Manager -->
+    <rect x="650" y="590" width="200" height="80" rx="5" class="box state"/>
+    <text x="750" y="610" class="text">State Manager</text>
+    <text x="750" y="625" class="text-small">• IDLE / LISTENING</text>
+    <text x="750" y="638" class="text-small">• PLANNING</text>
+    <text x="750" y="651" class="text-small">• EXECUTING / ERROR</text>
+  </g>
+
+  <!-- Safety connections -->
+  <path d="M 150 590 L 150 570 L 50 400" class="arrow" style="stroke: #FF5722; stroke-dasharray: 3,3"/>
+  <path d="M 150 590 L 150 570 L 850 400" class="arrow" style="stroke: #FF5722; stroke-dasharray: 3,3"/>
+
+  <!-- State management connections -->
+  <path d="M 750 590 L 750 570 L 850 400" class="arrow" style="stroke: #00BCD4; stroke-dasharray: 3,3"/>
+  <path d="M 750 590 L 750 570 L 450 255" class="arrow" style="stroke: #00BCD4; stroke-dasharray: 3,3"/>
+
+  <!-- Data flow labels -->
+  <text x="180" y="340" class="label">Localization</text>
+  <text x="180" y="410" class="label">Objects</text>
+  <text x="630" y="340" class="label">Commands</text>
+  <text x="630" y="410" class="label">Status</text>
+
+  <!-- Bottom legend -->
+  <g>
+    <rect x="50" y="680" width="800" height="1" style="fill: #999"/>
+    <text x="450" y="695" class="label" style="font-style: italic">
+      All 4 modules integrated: Voice commands → LLM planning → Navigation/Manipulation → Robot actions
+    </text>
+  </g>
+</svg>

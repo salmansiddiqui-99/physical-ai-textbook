@@ -1,0 +1,366 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!--
+    Depth Camera Macro for Humanoid Robots
+
+    Simulates RGB-D cameras like Intel RealSense, Microsoft Kinect, or Orbbec Astra.
+    Provides RGB images, depth images, and 3D point clouds.
+
+    Parameters:
+      - parent: Parent link name
+      - prefix: Sensor namespace (e.g., "head", "chest")
+      - x, y, z: Position offset from parent
+      - roll, pitch, yaw: Orientation (radians)
+
+    Published topics:
+      - /${prefix}_camera/image_raw (RGB image)
+      - /${prefix}_camera/depth/image_raw (depth image)
+      - /${prefix}_camera/camera_info (camera calibration)
+      - /${prefix}_camera/points (point cloud)
+
+    Example usage:
+      <xacro:depth_camera parent="head_link" prefix="head"
+                          x="0.08" y="0" z="0.05"
+                          roll="0" pitch="0" yaw="0"/>
+  -->
+
+  <xacro:macro name="depth_camera" params="parent prefix x:=0 y:=0 z:=0 roll:=0 pitch:=0 yaw:=0">
+
+    <!-- Camera Link -->
+    <link name="${prefix}_camera_link">
+      <visual>
+        <geometry>
+          <box size="0.05 0.1 0.03"/>
+        </geometry>
+        <material name="camera_dark_grey">
+          <color rgba="0.3 0.3 0.3 1.0"/>
+        </material>
+      </visual>
+
+      <collision>
+        <geometry>
+          <box size="0.05 0.1 0.03"/>
+        </geometry>
+      </collision>
+
+      <inertial>
+        <mass value="0.1"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.0001" ixy="0.0" ixz="0.0"
+                 iyy="0.0001" iyz="0.0"
+                 izz="0.0001"/>
+      </inertial>
+    </link>
+
+    <!-- Optical Frame (ROS Camera Convention: X=right, Y=down, Z=forward) -->
+    <link name="${prefix}_camera_optical_frame"/>
+
+    <!-- Attach camera to parent link -->
+    <joint name="${prefix}_camera_joint" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${prefix}_camera_link"/>
+      <origin xyz="${x} ${y} ${z}" rpy="${roll} ${pitch} ${yaw}"/>
+    </joint>
+
+    <!-- Optical frame transformation -->
+    <joint name="${prefix}_camera_optical_joint" type="fixed">
+      <parent link="${prefix}_camera_link"/>
+      <child link="${prefix}_camera_optical_frame"/>
+      <origin xyz="0 0 0" rpy="-1.5707963 0 -1.5707963"/>
+    </joint>
+
+    <!-- Gazebo Depth Camera Plugin -->
+    <gazebo reference="${prefix}_camera_link">
+      <sensor type="depth" name="${prefix}_depth_camera">
+        <update_rate>30.0</update_rate>
+        <visualize>true</visualize>
+
+        <camera name="${prefix}_camera">
+          <!-- Field of View (60° horizontal) -->
+          <horizontal_fov>1.047198</horizontal_fov>
+
+          <!-- Image Resolution (VGA) -->
+          <image>
+            <width>640</width>
+            <height>480</height>
+            <format>R8G8B8</format>
+          </image>
+
+          <!-- Clipping Planes -->
+          <clip>
+            <near>0.05</near>  <!-- 5 cm minimum depth -->
+            <far>10.0</far>    <!-- 10 m maximum depth -->
+          </clip>
+
+          <!-- Realistic Noise -->
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.007</stddev>
+          </noise>
+        </camera>
+
+        <!-- ROS 2 Plugin -->
+        <plugin name="${prefix}_camera_controller" filename="libgazebo_ros_camera.so">
+          <ros>
+            <namespace>/humanoid</namespace>
+            <remapping>~/image_raw:=${prefix}_camera/image_raw</remapping>
+            <remapping>~/depth/image_raw:=${prefix}_camera/depth/image_raw</remapping>
+            <remapping>~/camera_info:=${prefix}_camera/camera_info</remapping>
+            <remapping>~/depth/camera_info:=${prefix}_camera/depth/camera_info</remapping>
+            <remapping>~/points:=${prefix}_camera/points</remapping>
+          </ros>
+
+          <camera_name>${prefix}_camera</camera_name>
+          <frame_name>${prefix}_camera_optical_frame</frame_name>
+
+          <!-- Stereo baseline (for disparity calculation) -->
+          <hack_baseline>0.07</hack_baseline>
+
+          <!-- Depth range -->
+          <min_depth>0.05</min_depth>
+          <max_depth>10.0</max_depth>
+        </plugin>
+      </sensor>
+    </gazebo>
+
+  </xacro:macro>
+
+
+  <!--
+    High-Resolution Depth Camera Macro
+
+    For applications requiring higher image quality (e.g., object recognition).
+  -->
+
+  <xacro:macro name="depth_camera_hd" params="parent prefix x:=0 y:=0 z:=0">
+
+    <link name="${prefix}_camera_hd_link">
+      <visual>
+        <geometry>
+          <box size="0.06 0.12 0.04"/>
+        </geometry>
+        <material name="camera_hd_black">
+          <color rgba="0.1 0.1 0.1 1.0"/>
+        </material>
+      </visual>
+
+      <collision>
+        <geometry>
+          <box size="0.06 0.12 0.04"/>
+        </geometry>
+      </collision>
+
+      <inertial>
+        <mass value="0.15"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.0002" ixy="0.0" ixz="0.0"
+                 iyy="0.0002" iyz="0.0"
+                 izz="0.0002"/>
+      </inertial>
+    </link>
+
+    <link name="${prefix}_camera_hd_optical_frame"/>
+
+    <joint name="${prefix}_camera_hd_joint" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${prefix}_camera_hd_link"/>
+      <origin xyz="${x} ${y} ${z}" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="${prefix}_camera_hd_optical_joint" type="fixed">
+      <parent link="${prefix}_camera_hd_link"/>
+      <child link="${prefix}_camera_hd_optical_frame"/>
+      <origin xyz="0 0 0" rpy="-1.5707963 0 -1.5707963"/>
+    </joint>
+
+    <gazebo reference="${prefix}_camera_hd_link">
+      <sensor type="depth" name="${prefix}_depth_camera_hd">
+        <update_rate>30.0</update_rate>
+        <visualize>false</visualize>
+
+        <camera name="${prefix}_camera_hd">
+          <!-- Wider FOV (90°) -->
+          <horizontal_fov>1.5708</horizontal_fov>
+
+          <!-- HD Resolution (1280x720) -->
+          <image>
+            <width>1280</width>
+            <height>720</height>
+            <format>R8G8B8</format>
+          </image>
+
+          <clip>
+            <near>0.1</near>
+            <far>15.0</far>
+          </clip>
+
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.005</stddev>  <!-- Better quality -->
+          </noise>
+        </camera>
+
+        <plugin name="${prefix}_camera_hd_controller" filename="libgazebo_ros_camera.so">
+          <ros>
+            <namespace>/humanoid</namespace>
+            <remapping>~/image_raw:=${prefix}_camera_hd/image_raw</remapping>
+            <remapping>~/depth/image_raw:=${prefix}_camera_hd/depth/image_raw</remapping>
+            <remapping>~/camera_info:=${prefix}_camera_hd/camera_info</remapping>
+            <remapping>~/depth/camera_info:=${prefix}_camera_hd/depth/camera_info</remapping>
+            <remapping>~/points:=${prefix}_camera_hd/points</remapping>
+          </ros>
+
+          <camera_name>${prefix}_camera_hd</camera_name>
+          <frame_name>${prefix}_camera_hd_optical_frame</frame_name>
+          <hack_baseline>0.1</hack_baseline>
+          <min_depth>0.1</min_depth>
+          <max_depth>15.0</max_depth>
+        </plugin>
+      </sensor>
+    </gazebo>
+
+  </xacro:macro>
+
+
+  <!--
+    Stereo Camera Pair Macro
+
+    Two synchronized cameras for stereo vision (disparity-based depth estimation).
+    More realistic simulation of stereo camera systems.
+  -->
+
+  <xacro:macro name="stereo_camera" params="parent prefix baseline:=0.1 x:=0 y:=0 z:=0">
+
+    <!-- Left Camera -->
+    <link name="${prefix}_left_camera_link">
+      <visual>
+        <geometry>
+          <box size="0.04 0.04 0.03"/>
+        </geometry>
+        <material name="camera_left">
+          <color rgba="0.2 0.2 0.2 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="0.04 0.04 0.03"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.05"/>
+        <inertia ixx="0.00005" ixy="0" ixz="0"
+                 iyy="0.00005" iyz="0" izz="0.00005"/>
+      </inertial>
+    </link>
+
+    <link name="${prefix}_left_camera_optical_frame"/>
+
+    <joint name="${prefix}_left_camera_joint" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${prefix}_left_camera_link"/>
+      <origin xyz="${x} ${y + baseline/2} ${z}" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="${prefix}_left_optical_joint" type="fixed">
+      <parent link="${prefix}_left_camera_link"/>
+      <child link="${prefix}_left_camera_optical_frame"/>
+      <origin xyz="0 0 0" rpy="-1.5707963 0 -1.5707963"/>
+    </joint>
+
+    <!-- Right Camera -->
+    <link name="${prefix}_right_camera_link">
+      <visual>
+        <geometry>
+          <box size="0.04 0.04 0.03"/>
+        </geometry>
+        <material name="camera_right">
+          <color rgba="0.2 0.2 0.2 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="0.04 0.04 0.03"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.05"/>
+        <inertia ixx="0.00005" ixy="0" ixz="0"
+                 iyy="0.00005" iyz="0" izz="0.00005"/>
+      </inertial>
+    </link>
+
+    <link name="${prefix}_right_camera_optical_frame"/>
+
+    <joint name="${prefix}_right_camera_joint" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${prefix}_right_camera_link"/>
+      <origin xyz="${x} ${y - baseline/2} ${z}" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="${prefix}_right_optical_joint" type="fixed">
+      <parent link="${prefix}_right_camera_link"/>
+      <child link="${prefix}_right_camera_optical_frame"/>
+      <origin xyz="0 0 0" rpy="-1.5707963 0 -1.5707963"/>
+    </joint>
+
+    <!-- Gazebo Plugins for Both Cameras -->
+    <gazebo reference="${prefix}_left_camera_link">
+      <sensor type="camera" name="${prefix}_left_camera_sensor">
+        <update_rate>30.0</update_rate>
+        <camera>
+          <horizontal_fov>1.047198</horizontal_fov>
+          <image>
+            <width>640</width>
+            <height>480</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.05</near>
+            <far>100</far>
+          </clip>
+        </camera>
+        <plugin name="${prefix}_left_camera_controller" filename="libgazebo_ros_camera.so">
+          <ros>
+            <namespace>/humanoid</namespace>
+            <remapping>~/image_raw:=${prefix}_stereo/left/image_raw</remapping>
+            <remapping>~/camera_info:=${prefix}_stereo/left/camera_info</remapping>
+          </ros>
+          <camera_name>${prefix}_left</camera_name>
+          <frame_name>${prefix}_left_camera_optical_frame</frame_name>
+        </plugin>
+      </sensor>
+    </gazebo>
+
+    <gazebo reference="${prefix}_right_camera_link">
+      <sensor type="camera" name="${prefix}_right_camera_sensor">
+        <update_rate>30.0</update_rate>
+        <camera>
+          <horizontal_fov>1.047198</horizontal_fov>
+          <image>
+            <width>640</width>
+            <height>480</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.05</near>
+            <far>100</far>
+          </clip>
+        </camera>
+        <plugin name="${prefix}_right_camera_controller" filename="libgazebo_ros_camera.so">
+          <ros>
+            <namespace>/humanoid</namespace>
+            <remapping>~/image_raw:=${prefix}_stereo/right/image_raw</remapping>
+            <remapping>~/camera_info:=${prefix}_stereo/right/camera_info</remapping>
+          </ros>
+          <camera_name>${prefix}_right</camera_name>
+          <frame_name>${prefix}_right_camera_optical_frame</frame_name>
+        </plugin>
+      </sensor>
+    </gazebo>
+
+  </xacro:macro>
+
+</robot>
