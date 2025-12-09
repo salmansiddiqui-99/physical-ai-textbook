@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="500" viewBox="0 0 900 500">
+  <defs>
+    <style>
+      .title { font: bold 24px sans-serif; fill: #333; }
+      .box { fill: #3F51B5; stroke: #1A237E; stroke-width: 2; }
+      .process { fill: #4CAF50; stroke: #2E7D32; stroke-width: 2; }
+      .output { fill: #FF9800; stroke: #E65100; stroke-width: 2; }
+      .text { font: 14px sans-serif; fill: white; text-anchor: middle; }
+      .arrow { stroke: #333; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#333" />
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="450" y="30" class="title" text-anchor="middle">cuVSLAM Pipeline (Isaac ROS)</text>
+
+  <!-- Input Sensors -->
+  <g>
+    <rect x="50" y="80" width="120" height="60" rx="5" class="box"/>
+    <text x="110" y="115" class="text">Stereo Camera</text>
+  </g>
+
+  <g>
+    <rect x="50" y="170" width="120" height="60" rx="5" class="box"/>
+    <text x="110" y="205" class="text">IMU</text>
+  </g>
+
+  <!-- Feature Extraction -->
+  <g>
+    <rect x="230" y="100" width="140" height="100" rx="5" class="process"/>
+    <text x="300" y="140" class="text">ORB Feature</text>
+    <text x="300" y="160" class="text">Extraction</text>
+    <text x="300" y="180" class="text" style="font-size: 11px;">(GPU Accelerated)</text>
+  </g>
+
+  <!-- Visual Odometry -->
+  <g>
+    <rect x="420" y="70" width="140" height="80" rx="5" class="process"/>
+    <text x="490" y="105" class="text">Visual</text>
+    <text x="490" y="125" class="text">Odometry</text>
+  </g>
+
+  <!-- Mapping -->
+  <g>
+    <rect x="420" y="180" width="140" height="80" rx="5" class="process"/>
+    <text x="490" y="215" class="text">Bundle</text>
+    <text x="490" y="235" class="text">Adjustment</text>
+  </g>
+
+  <!-- Loop Closure -->
+  <g>
+    <rect x="420" y="290" width="140" height="80" rx="5" class="process"/>
+    <text x="490" y="325" class="text">Loop Closure</text>
+    <text x="490" y="345" class="text">Detection</text>
+  </g>
+
+  <!-- Outputs -->
+  <g>
+    <rect x="620" y="80" width="140" height="70" rx="5" class="output"/>
+    <text x="690" y="110" class="text">/visual_slam/</text>
+    <text x="690" y="130" class="text">odometry</text>
+  </g>
+
+  <g>
+    <rect x="620" y="180" width="140" height="70" rx="5" class="output"/>
+    <text x="690" y="210" class="text">3D Landmarks</text>
+    <text x="690" y="230" class="text">(Map)</text>
+  </g>
+
+  <g>
+    <rect x="620" y="280" width="140" height="70" rx="5" class="output"/>
+    <text x="690" y="310" class="text">Corrected</text>
+    <text x="690" y="330" class="text">Trajectory</text>
+  </g>
+
+  <!-- Arrows -->
+  <path d="M 170 110 L 230 140" class="arrow"/>
+  <path d="M 170 200 L 230 160" class="arrow"/>
+  <path d="M 370 150 L 420 110" class="arrow"/>
+  <path d="M 370 150 L 420 220" class="arrow"/>
+  <path d="M 370 150 L 420 330" class="arrow"/>
+  <path d="M 560 110 L 620 115" class="arrow"/>
+  <path d="M 560 220 L 620 215" class="arrow"/>
+  <path d="M 560 330 L 620 315" class="arrow"/>
+
+  <!-- Loop back arrow -->
+  <path d="M 490 290 L 490 260 L 300 260 L 300 200" class="arrow" stroke-dasharray="5,5"/>
+  <text x="400" y="250" style="font: 12px sans-serif; fill: #666;">Pose Correction</text>
+
+  <!-- NITROS Label -->
+  <rect x="50" y="400" width="800" height="60" rx="5" fill="#E91E63" stroke="#880E4F" stroke-width="2"/>
+  <text x="450" y="435" class="text" style="font-size: 18px;">NITROS Zero-Copy Transport (GPU Memory)</text>
+</svg>

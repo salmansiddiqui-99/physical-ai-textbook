@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="700" viewBox="0 0 800 700">
+  <defs>
+    <style>
+      .title { font: bold 24px sans-serif; fill: #333; }
+      .planner { fill: #2196F3; stroke: #0D47A1; stroke-width: 2; }
+      .controller { fill: #4CAF50; stroke: #2E7D32; stroke-width: 2; }
+      .recovery { fill: #FF9800; stroke: #E65100; stroke-width: 2; }
+      .behavior { fill: #9C27B0; stroke: #4A148C; stroke-width: 2; }
+      .text { font: 14px sans-serif; fill: white; text-anchor: middle; }
+      .arrow { stroke: #333; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .label { font: 12px sans-serif; fill: #666; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#333" />
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="400" y="30" class="title" text-anchor="middle">Nav2 Bipedal Navigation Stack</text>
+
+  <!-- Behavior Tree Navigator -->
+  <g>
+    <rect x="300" y="60" width="200" height="60" rx="5" class="behavior"/>
+    <text x="400" y="95" class="text">Behavior Tree Navigator</text>
+  </g>
+
+  <!-- Global Planner -->
+  <g>
+    <rect x="80" y="180" width="180" height="100" rx="5" class="planner"/>
+    <text x="170" y="215" class="text">Global Planner</text>
+    <text x="170" y="235" class="text" style="font-size: 12px;">(Smac Hybrid A*)</text>
+    <text x="170" y="255" class="text" style="font-size: 11px;">Respects turning radius</text>
+  </g>
+
+  <!-- Controller Server -->
+  <g>
+    <rect x="310" y="180" width="180" height="100" rx="5" class="controller"/>
+    <text x="400" y="215" class="text">Controller Server</text>
+    <text x="400" y="235" class="text" style="font-size: 12px;">(DWB/Footstep)</text>
+    <text x="400" y="255" class="text" style="font-size: 11px;">Bipedal constraints</text>
+  </g>
+
+  <!-- Recovery Server -->
+  <g>
+    <rect x="540" y="180" width="180" height="100" rx="5" class="recovery"/>
+    <text x="630" y="215" class="text">Recovery Behaviors</text>
+    <text x="630" y="235" class="text" style="font-size: 12px;">Sidestep, backup</text>
+    <text x="630" y="255" class="text" style="font-size: 11px;">No in-place rotation</text>
+  </g>
+
+  <!-- Costmaps -->
+  <g>
+    <rect x="100" y="340" width="250" height="120" rx="5" fill="#607D8B" stroke="#37474F" stroke-width="2"/>
+    <text x="225" y="375" class="text">Global Costmap</text>
+    <text x="225" y="395" class="text" style="font-size: 12px;">Static map + inflation</text>
+    <text x="225" y="415" class="text" style="font-size: 11px;">Full environment</text>
+    <text x="225" y="435" class="text" style="font-size: 11px;">Low update rate (1 Hz)</text>
+  </g>
+
+  <g>
+    <rect x="420" y="340" width="250" height="120" rx="5" fill="#607D8B" stroke="#37474F" stroke-width="2"/>
+    <text x="545" y="375" class="text">Local Costmap</text>
+    <text x="545" y="395" class="text" style="font-size: 12px;">Voxel layer (3D)</text>
+    <text x="545" y="415" class="text" style="font-size: 11px;">5m x 5m window</text>
+    <text x="545" y="435" class="text" style="font-size: 11px;">High update (5 Hz)</text>
+  </g>
+
+  <!-- Perception Input -->
+  <g>
+    <rect x="100" y="520" width="150" height="60" rx="5" fill="#00BCD4" stroke="#006064" stroke-width="2"/>
+    <text x="175" y="555" class="text">Isaac ROS</text>
+    <text x="175" y="570" class="text" style="font-size: 12px;">cuVSLAM</text>
+  </g>
+
+  <g>
+    <rect x="290" y="520" width="150" height="60" rx="5" fill="#00BCD4" stroke="#006064" stroke-width="2"/>
+    <text x="365" y="555" class="text">Stereo Depth</text>
+    <text x="365" y="570" class="text" style="font-size: 12px;">Point Cloud</text>
+  </g>
+
+  <g>
+    <rect x="480" y="520" width="150" height="60" rx="5" fill="#00BCD4" stroke="#006064" stroke-width="2"/>
+    <text x="555" y="555" class="text">LiDAR</text>
+    <text x="555" y="570" class="text" style="font-size: 12px;">Laser Scan</text>
+  </g>
+
+  <!-- Output -->
+  <rect x="250" y="620" width="300" height="60" rx="5" fill="#E91E63" stroke="#880E4F" stroke-width="2"/>
+  <text x="400" y="655" class="text" style="font-size: 18px;">Velocity Commands → Humanoid Controller</text>
+
+  <!-- Arrows -->
+  <path d="M 400 120 L 170 180" class="arrow"/>
+  <path d="M 400 120 L 400 180" class="arrow"/>
+  <path d="M 400 120 L 630 180" class="arrow"/>
+
+  <path d="M 170 280 L 225 340" class="arrow"/>
+  <path d="M 400 280 L 545 340" class="arrow"/>
+
+  <path d="M 175 520 L 175 460" class="arrow"/>
+  <path d="M 365 520 L 400 460" class="arrow"/>
+  <path d="M 555 520 L 600 460" class="arrow"/>
+
+  <path d="M 400 460 L 400 620" class="arrow"/>
+
+  <!-- Bipedal Constraints Label -->
+  <rect x="50" y="10" width="150" height="30" rx="3" fill="#FFF3E0" stroke="#FF6F00" stroke-width="1"/>
+  <text x="125" y="30" style="font: bold 12px sans-serif; fill: #FF6F00;" text-anchor="middle">Bipedal Adaptations:</text>
+
+  <text x="60" y="690" class="label">• Turning radius &gt; 0.5m</text>
+  <text x="300" y="690" class="label">• Stride length ≤ 0.5m</text>
+  <text x="550" y="690" class="label">• 3D obstacle detection (head clearance)</text>
+</svg>

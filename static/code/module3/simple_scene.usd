@@ -1,0 +1,104 @@
+#usda 1.0
+(
+    defaultPrim = "World"
+    upAxis = "Z"
+    metersPerUnit = 1.0
+    doc = """Simple Isaac Sim scene with ground plane and cube
+             Purpose: Basic USD scene structure demonstration
+             Usage: File > Open in Isaac Sim"""
+)
+
+def Xform "World"
+{
+    def Xform "Environment"
+    {
+        def Plane "GroundPlane" (
+            prepend apiSchemas = ["PhysicsCollisionAPI"]
+        )
+        {
+            float3[] extent = [(-100, -100, 0), (100, 100, 0)]
+            double size = 100
+            token axis = "Z"
+            uniform token purpose = "default"
+
+            # Physics properties
+            bool physics:collisionEnabled = true
+            rel material:binding = </World/Looks/GroundMaterial>
+        }
+
+        def DistantLight "SunLight"
+        {
+            float intensity = 1000
+            float3 color = (1.0, 0.95, 0.9)
+            float angle = 0.5
+            quatf xformOp:orient = (0.707, 0.707, 0, 0)
+            float3 xformOp:translate = (0, 0, 10)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+        }
+
+        def DomeLight "SkyDome"
+        {
+            float intensity = 300
+            asset texture:file = @omni:/NVIDIA/Assets/Skies/Clear/noon_grass_4k.hdr@
+        }
+    }
+
+    def Scope "Looks"
+    {
+        def Material "GroundMaterial"
+        {
+            token outputs:mdl:surface.connect = </World/Looks/GroundMaterial/Shader.outputs:out>
+
+            def Shader "Shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                float inputs:diffuse_color_constant = (0.8, 0.8, 0.8)
+                float inputs:metallic_constant = 0.0
+                float inputs:roughness_constant = 0.6
+                token outputs:out
+            }
+        }
+
+        def Material "CubeMaterial"
+        {
+            token outputs:mdl:surface.connect = </World/Looks/CubeMaterial/Shader.outputs:out>
+
+            def Shader "Shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                float inputs:diffuse_color_constant = (0.2, 0.5, 0.9)
+                float inputs:metallic_constant = 0.1
+                float inputs:roughness_constant = 0.4
+                token outputs:out
+            }
+        }
+    }
+
+    def Xform "Objects"
+    {
+        def Cube "FallingCube" (
+            prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+        )
+        {
+            double size = 0.5
+            float3 xformOp:translate = (0, 0, 2.0)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+            rel material:binding = </World/Looks/CubeMaterial>
+
+            # Physics properties
+            float physics:mass = 10.0
+            bool physics:rigidBodyEnabled = true
+            point3f physics:centerOfMass = (0, 0, 0)
+        }
+    }
+
+    def PhysicsScene "PhysicsScene"
+    {
+        vector3f physics:gravityDirection = (0, 0, -1)
+        float physics:gravityMagnitude = 9.81
+    }
+}

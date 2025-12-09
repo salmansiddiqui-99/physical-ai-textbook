@@ -13,12 +13,12 @@
   "properties": {
     "id": {
       "type": "string",
-      "pattern": "^module[1-4]-(ros2|simulation|isaac|vla)/ch[1-3]-[a-z0-9-]+$",
-      "description": "Unique chapter identifier matching file path without .md extension",
+      "pattern": "^ch[1-9][0-9]?-[a-z0-9-]+$",
+      "description": "Unique chapter identifier (no slashes, Docusaurus requirement)",
       "examples": [
-        "module1-ros2/ch1-ros2-basics",
-        "module2-simulation/ch3-unity-visualization",
-        "module4-vla/ch3-capstone-project"
+        "ch1-ros2-basics",
+        "ch3-unity-visualization",
+        "ch12-capstone-project"
       ]
     },
     "title": {
